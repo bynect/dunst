@@ -42,6 +42,7 @@ struct notification_colors {
         char *bg;
         char *fg;
         char *highlight;
+        char *highlight_gradient;
 };
 
 struct notification {
@@ -240,7 +241,7 @@ void notification_open_url(struct notification *n);
 
 /**
  * Open the context menu for the notification.
- * 
+ *
  * Convenience function that creates the GList and passes it to context_menu_for().
  */
 void notification_open_context_menu(struct notification *n);

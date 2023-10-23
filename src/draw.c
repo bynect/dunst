@@ -34,12 +34,14 @@ struct colored_layout {
         struct color fg;
         struct color bg;
         struct color highlight;
+        struct color highlight_gradient;
         struct color frame;
         char *text;
         PangoAttrList *attr;
         cairo_surface_t *icon;
         struct notification *n;
         bool is_xmore;
+        bool gradient;
 };
 
 const struct output *output;
@@ -128,6 +130,22 @@ static inline double color_apply_delta(double base, double delta)
 
         return base;
 }
+
+static struct color calculate_gradient(const struct color highlight)
+{
+        // This values are arbitrary. We should simply choose an acceptable default
+        const double diff1 = 0.3;
+        const double diff2 = 0.21;
+
+        struct color gradient = {
+                MAX(0, highlight.r - (highlight.r > highlight.g && highlight.r > highlight.b ? diff1 : diff2)),
+                MAX(0, highlight.g - (highlight.g > highlight.r && highlight.g > highlight.b ? diff1 : diff2)),
+                MAX(0, highlight.b - (highlight.b > highlight.g && highlight.b > highlight.r ? diff1 : diff2)),
+                highlight.a
+        };
+        return gradient;
+}
+
 
 static struct color calculate_foreground_color(struct color bg)
 {
@@ -355,6 +373,13 @@ static struct colored_layout *layout_init_shared(cairo_t *c, struct notification
         cl->frame = string_to_color(n->colors.frame);
         cl->is_xmore = false;
 
+        cl->gradient = strcmp(n->colors.highlight_gradient, "none") != 0;
+        if (cl->gradient) {
+                cl->highlight_gradient = strcmp(n->colors.highlight_gradient, "auto") == 0 ?
+                                         calculate_gradient(cl->highlight) :
+                                         string_to_color(n->colors.highlight_gradient);
+        }
+
         cl->n = n;
         return cl;
 }
@@ -372,7 +397,6 @@ static struct colored_layout *layout_derive_xmore(cairo_t *c, struct notificatio
 
 static struct colored_layout *layout_from_notification(cairo_t *c, struct notification *n)
 {
-
         struct colored_layout *cl = layout_init_shared(c, n);
 
         if (n->icon_position != ICON_OFF && n->icon) {
@@ -743,18 +767,37 @@ static void render_content(cairo_t *c, struct colored_layout *cl, int width, dou
 
                 double half_frame_width = frame_width / 2.0;
 
+
+                cairo_pattern_t *pattern;
+                if (cl->gradient) {
+                        // If we ever use highlight (and highlight_gradient) for anything other than the progress
+                        // bar we have to move this up and also change the starting/ending x coordinates
+                        pattern = cairo_pattern_create_linear(x_bar_1, 0, frame_x + progress_width, 0);
+
+                        cairo_pattern_add_color_stop_rgba(pattern, 0.0,
+                                                          cl->highlight.r, cl->highlight.g,
+                                                          cl->highlight.b, cl->highlight.a);
+
+                        cairo_pattern_add_color_stop_rgba(pattern, 1.0,
+                                                          cl->highlight_gradient.r, cl->highlight_gradient.g,
+                                                          cl->highlight_gradient.b, cl->highlight_gradient.a);
+                } else {
+                        pattern = cairo_pattern_create_rgba(cl->highlight.r, cl->highlight.g,
+                                                            cl->highlight.b, cl->highlight.a);
+                }
+
                 /* Draw progress bar
                 * TODO: Modify draw_rounded_rect to fix blurry lines due to fractional scaling
-                * Note: the bar could be drawn a bit smaller, because the frame is drawn on top 
+                * Note: the bar could be drawn a bit smaller, because the frame is drawn on top
                 */
                 // left side (fill)
-                cairo_set_source_rgba(c, cl->highlight.r, cl->highlight.g, cl->highlight.b, cl->highlight.a);
-                draw_rounded_rect(c, x_bar_1, frame_y, progress_width_1, progress_height, 
+                cairo_set_source(c, pattern);
+                draw_rounded_rect(c, x_bar_1, frame_y, progress_width_1, progress_height,
                         settings.progress_bar_corner_radius, scale, true, true);
                 cairo_fill(c);
                 // right side (background)
                 cairo_set_source_rgba(c, cl->bg.r, cl->bg.g, cl->bg.b, cl->bg.a);
-                draw_rounded_rect(c, x_bar_2, frame_y, progress_width_2, progress_height, 
+                draw_rounded_rect(c, x_bar_2, frame_y, progress_width_2, progress_height,
                         settings.progress_bar_corner_radius, scale, true, true);
 
                 cairo_fill(c);
@@ -770,6 +813,8 @@ static void render_content(cairo_t *c, struct colored_layout *cl, int width, dou
                                 settings.progress_bar_corner_radius,
                                 scale, true, true);
                 cairo_stroke(c);
+
+                cairo_pattern_destroy(pattern);
         }
 }
 

@@ -71,6 +71,10 @@ void rule_apply(struct rule *r, struct notification *n)
                 g_free(n->colors.highlight);
                 n->colors.highlight = g_strdup(r->highlight);
         }
+        if (r->highlight_gradient) {
+                g_free(n->colors.highlight_gradient);
+                n->colors.highlight_gradient = g_strdup(r->highlight_gradient);
+        }
         if (r->fc) {
                 g_free(n->colors.frame);
                 n->colors.frame = g_strdup(r->fc);

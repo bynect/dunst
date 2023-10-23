@@ -49,6 +49,7 @@ struct rule {
         char *fg;
         char *bg;
         char *highlight;
+        char *highlight_gradient;
         char *default_icon;
         char *fc;
         char *set_category;

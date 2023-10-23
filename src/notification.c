@@ -67,6 +67,7 @@ void notification_print(const struct notification *n)
         printf("\tfg: %s\n", n->colors.fg);
         printf("\tbg: %s\n", n->colors.bg);
         printf("\thighlight: %s\n", n->colors.highlight);
+        printf("\thighlight_gradient: %s\n", n->colors.highlight_gradient);
         printf("\tframe: %s\n", n->colors.frame);
         printf("\tfullscreen: %s\n", enum_to_string_fullscreen(n->fullscreen));
         printf("\tformat: %s\n", n->format);
@@ -286,6 +287,7 @@ void notification_unref(struct notification *n)
         g_free(n->colors.fg);
         g_free(n->colors.bg);
         g_free(n->colors.highlight);
+        g_free(n->colors.highlight_gradient);
         g_free(n->colors.frame);
         g_free(n->stack_tag);
         g_free(n->desktop_entry);
@@ -481,6 +483,8 @@ void notification_init(struct notification *n)
                 n->colors.bg = g_strdup(defcolors.bg);
         if (!n->colors.highlight)
                 n->colors.highlight = g_strdup(defcolors.highlight);
+        if (!n->colors.highlight_gradient)
+                n->colors.highlight_gradient = g_strdup(defcolors.highlight_gradient);
         if (!n->colors.frame)
                 n->colors.frame = g_strdup(defcolors.frame);
 
@@ -705,7 +709,7 @@ void notification_update_text_to_render(struct notification *n)
 void notification_do_action(struct notification *n)
 {
         assert(n->default_action_name);
-        
+
         if (g_hash_table_size(n->actions)) {
                 if (g_hash_table_contains(n->actions, n->default_action_name)) {
                         signal_action_invoked(n, n->default_action_name);

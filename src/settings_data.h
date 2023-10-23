@@ -112,7 +112,7 @@ struct setting {
 /*
  *   How to add/change a rule
  *   ------------------------
- * 
+ *
  * - Add variable to `struct rules` in `rules.h` (make sure to read the comment
  *   at the top of the struct)
  * - Add variable to to `struct notification` in `notification.h`
@@ -517,6 +517,17 @@ static const struct setting allowed_settings[] = {
                 .parser = NULL,
                 .parser_data = NULL,
                 .rule_offset = offsetof(struct rule, highlight),
+        },
+        {
+                .name = "highlight_gradient",
+                .section = "*",
+                .description = "The highlight gradient of the notification.",
+                .type = TYPE_STRING,
+                .default_value = "*",
+                .value = NULL,
+                .parser = NULL,
+                .parser_data = NULL,
+                .rule_offset = offsetof(struct rule, highlight_gradient),
         },
         {
                 .name = "default_icon",
@@ -1301,6 +1312,16 @@ static const struct setting allowed_settings[] = {
                 .parser_data = NULL,
         },
         {
+                .name = "highlight_gradient",
+                .section = "urgency_low",
+                .description = "Highlight gradient for notifications with low urgency",
+                .type = TYPE_STRING,
+                .default_value = "none",
+                .value = &settings.colors_low.highlight_gradient,
+                .parser = NULL,
+                .parser_data = NULL,
+        },
+        {
                 .name = "frame_color",
                 .section = "urgency_low",
                 .description = "Frame color for notifications with low urgency",
@@ -1351,6 +1372,16 @@ static const struct setting allowed_settings[] = {
                 .parser_data = NULL,
         },
         {
+                .name = "highlight_gradient",
+                .section = "urgency_normal",
+                .description = "Highlight gradient for notifications with normal urgency",
+                .type = TYPE_STRING,
+                .default_value = "none",
+                .value = &settings.colors_norm.highlight_gradient,
+                .parser = NULL,
+                .parser_data = NULL,
+        },
+        {
                 .name = "frame_color",
                 .section = "urgency_normal",
                 .description = "Frame color for notifications with normal urgency",
@@ -1397,6 +1428,16 @@ static const struct setting allowed_settings[] = {
                 .type = TYPE_STRING,
                 .default_value = "#ff6666",
                 .value = &settings.colors_crit.highlight,
+                .parser = NULL,
+                .parser_data = NULL,
+        },
+        {
+                .name = "highlight_gradient",
+                .section = "urgency_critical",
+                .description = "Highlight gradient for notifications with critical urgency",
+                .type = TYPE_STRING,
+                .default_value = "none",
+                .value = &settings.colors_crit.highlight_gradient,
                 .parser = NULL,
                 .parser_data = NULL,
         },
