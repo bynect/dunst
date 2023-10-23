@@ -435,8 +435,7 @@ static GSList *create_layouts(cairo_t *c)
         int qlen = queues_length_waiting();
         bool xmore_is_needed = qlen > 0 && settings.indicate_hidden;
 
-        for (const GList *iter = queues_get_displayed();
-                        iter; iter = iter->next)
+        for (const GList *iter = queues_get_displayed(); iter; iter = iter->next)
         {
                 struct notification *n = iter->data;
 
@@ -766,7 +765,6 @@ static void render_content(cairo_t *c, struct colored_layout *cl, int width, dou
                              x_bar_2 = x_bar_1 + progress_width_1;
 
                 double half_frame_width = frame_width / 2.0;
-
 
                 cairo_pattern_t *pattern;
                 if (cl->gradient) {

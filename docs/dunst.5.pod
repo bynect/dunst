@@ -826,6 +826,13 @@ The foreground color of the notification. See COLORS for possible values.
 The highlight color of the notification. This color is used for coloring the
 progress bar. See COLORS for possible values.
 
+=item C<highlight_gradient>
+
+The second highlight color of the notification, used to create a gradient together
+with C<highlight>. See COLORS for possible values.
+Other two values are also accepted: 'none' for no gradient and 'auto'
+to compute a slight gradient.
+
 =item C<format>
 
 Equivalent to the C<format> setting.
