@@ -81,7 +81,7 @@ int string_parse_enum_list_to_single(const void *data, char **s, int *ret)
         int len = string_array_length(s);
         for (int i = 0; i < len; i++) {
                 if (!string_parse_enum(data, s[i], &tmp)) {
-                        LOG_W("Unknown mouse action value: '%s'", s[i]);
+                        LOG_W("Unknown value: '%s'", s[i]);
                         return false;
                 }
                 tmp_ret |= tmp;
@@ -203,6 +203,12 @@ int string_parse_bool(const void *data, const char *s, void *ret)
 
         *(bool*) ret = (bool) tmp_int;
         return success;
+}
+
+int string_parse_corners(const void *data, const char *s, void *ret)
+{
+        char **s_arr = string_to_array(s, ",");
+        return string_parse_enum_list_to_single(data, s_arr, ret);
 }
 
 int get_setting_id(const char *key, const char *section) {
@@ -403,7 +409,7 @@ bool set_rule(struct setting setting, char* value, char* section) {
         return set_rule_value(r, setting, value);
 }
 
-void set_defaults() {
+void set_defaults(void) {
         for (int i = 0; i < G_N_ELEMENTS(allowed_settings); i++) {
                 // FIXME Rule settings can only have a default if they have an
                 // working entry in the settings struct as well. Make an
