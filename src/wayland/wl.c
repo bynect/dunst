@@ -896,13 +896,20 @@ double wl_get_scale(void) {
         struct dunst_output *output = get_configured_output();
         if (output) {
                 scale = output->scale;
+
+                LOG_I("Output found, global name = %u, name = %s, scale = %u", output->global_name, output->name, output->scale);
         } else {
+                LOG_I("Output not found!");
+
                 // return the largest scale
                 struct dunst_output *output;
                 wl_list_for_each(output, &ctx.outputs, link) {
                         scale = MAX(output->scale, scale);
+                        LOG_I("Checking output %s (%u) with scale %u", output->name, output->global_name, output->scale);
                 }
         }
+
+        LOG_I("Scale is %d", scale);
         if (scale <= 0)
                 scale = 1;
         return scale;
