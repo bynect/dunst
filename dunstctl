@@ -175,8 +175,7 @@ case "${1:-}" in
 			|| die "Dunst controlling interface not available. Is the version too old?"
 		;;
 	"history")
-		busctl --user --json=pretty --no-pager call org.freedesktop.Notifications /org/freedesktop/Notifications org.dunstproject.cmd0 NotificationListHistory 2>/dev/null \
-			|| die "Dunst is not running."
+		busctl --user --json=pretty --no-pager call org.freedesktop.Notifications /org/freedesktop/Notifications org.dunstproject.cmd0 NotificationListHistory
 		;;
 	"")
 		die "dunstctl: No command specified. Please consult the usage."

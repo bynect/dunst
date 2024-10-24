@@ -162,6 +162,8 @@ void dbus_cb_fdn_methods(GDBusConnection *connection,
                         gpointer user_data)
 {
 
+        LOG_D("RECEIVED DBUS METHOD CALL\n");
+
         struct dbus_method *m = bsearch(method_name,
                                         methods_fdn,
                                         G_N_ELEMENTS(methods_fdn),
@@ -211,6 +213,8 @@ void dbus_cb_dunst_methods(GDBusConnection *connection,
                            GDBusMethodInvocation *invocation,
                            gpointer user_data)
 {
+
+        LOG_D("RECEIVED DBUS METHOD CALL\n");
 
         struct dbus_method *m = bsearch(method_name,
                                         methods_dunst,
@@ -936,7 +940,7 @@ gboolean dbus_cb_dunst_Properties_Set(GDBusConnection *connection,
         int targetPauseLevel = -1;
         if (STR_EQ(property_name, "paused")) {
                 if (g_variant_get_boolean(value)) {
-                        targetPauseLevel = MAX_PAUSE_LEVEL;                 
+                        targetPauseLevel = MAX_PAUSE_LEVEL;
                 } else {
                         targetPauseLevel = 0;
                 }
